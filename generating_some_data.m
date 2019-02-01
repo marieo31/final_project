@@ -6,6 +6,8 @@ nbpix = 4;
 
 % Transformation matrices
 % translation to the left
+% P = [zeros(n
+
 P = [   0     0     0     1;
         1     0     0     0;
         0     1     0     0;
@@ -34,7 +36,7 @@ for cc = 1:length(cut)
 
         Mreal = double((rand(4,4) > cut(cc)));        
         Mmang = Mreal*P;
-        Mstar = Mreal*P;                
+        Mstar = Mreal*Pstar;                
         
         tab_Mreal(jj,:) = reshape(Mreal, 1, nbpix^2);
         tab_Mmang(jj,:) = reshape(Mmang, 1, nbpix^2);

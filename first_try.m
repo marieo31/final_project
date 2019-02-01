@@ -2,7 +2,7 @@ clear variables
 format compact
 clc
 
-nbpix = 4;
+nbpix = 6;
 
 % input matrix: Mr
 Mreal = ones(nbpix)+diag(1:nbpix)
