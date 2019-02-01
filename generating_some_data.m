@@ -47,4 +47,4 @@ for cc = 1:length(cut)
     end
 end
     
-    
+spy(tab_Mreal)    
