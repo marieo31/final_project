@@ -2,7 +2,7 @@ clear variables
 format compact
 clc
 
-nbpix = 6;
+nbpix = 4;
 
 % input matrix: Mr
 Mreal = ones(nbpix)+diag(1:nbpix)
@@ -26,5 +26,11 @@ Result = Mstar*P
 
 % P2 = R/M
 
-P2*M
+% P2*M
+
+
+Mreal = magic(3)
+Mmang = [6,7,2; 1,5,9; 8,3,4]
+
+Mreal\Mmang
 
