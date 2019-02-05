@@ -15,12 +15,14 @@ function nbpixChanged(newNBpix){
 }
 
 function randomImage(){
-    console.log(selector_nbpix.property("value"))
+    let url = "/random_image/"+selector_nbpix.property("value")
+    d3.json(url).then(function(response){
+        console.log(response)
+
+    })
+    
 
 }
-
-
-
 
 function init(){
     
