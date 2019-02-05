@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Home page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" type="text/css" media="screen" href="main.css" /> -->
+    <!-- <script src="main.js"></script> -->
+</head>
+<body>
+    
+    <h1>First try</h1>
+
+    <select id="selTransform" onchange="transformChanged(this.value)"></select>
+    <select id="selNBpix" onchange="nbpixChanged(this.value)"></select>
+    <!-- <a href="/random_image" class="btn btn-primary" role="button">Random image</a> -->
+    <a id="random_image" class="btn btn-primary" onclick="randomImage()"  role="button">Random image</a>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.5.0/d3.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+</body>
+</html>
