@@ -16,8 +16,12 @@
     <select id="selTransform" onchange="transformChanged(this.value)"></select>
     <select id="selNBpix" onchange="nbpixChanged(this.value)"></select>
     <!-- <a href="/random_image" class="btn btn-primary" role="button">Random image</a> -->
-    <a id="random_image" class="btn btn-primary" onclick="randomImage()"  role="button">Random image</a>
+    <a id="random_img_btn" class="btn btn-primary" onclick="randomImage()"  role="button">Random image</a>
 
+
+    <div id="svg-random-img"></div>
+
+    <script src="http://d3js.org/d3.v2.min.js?2.8.1"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.5.0/d3.js"></script>
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 
