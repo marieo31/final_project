@@ -5,11 +5,12 @@ var selector_nbpix = d3.select("#selNBpix")
 
 // Layout variables
 var margin = {top: 50, right: 100, bottom: 100, left: 100},
-    width = 300,
-    height = 300;
+    width = 250,
+    height = 250;
 
 
 // Functions
+//-------------------------------------
 function transformChanged(newTransfrom) {
   }
 
@@ -27,6 +28,18 @@ function randomImage(){
         plotMatrix(response,d3.select("#svg-random-img") ) 
     })    
 }
+
+function createImage(){
+
+    // Adapt to the number of pxls
+    var list = [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1]
+
+    plotMatrix(list, d3.select("#svg-create-img") )
+    
+}
+
+
+
 
 
 
@@ -95,7 +108,10 @@ function plotMatrix(values, svg_obj){
         .attr("x", function(d, i) { return x(i); })
         .attr("width", x.rangeBand())
         .attr("height", y.rangeBand())
-        .style("stroke-width", 0.1);
+        // .style("stroke-width", 0.1);
+        .attr('stroke', '#2378ae')
+        .attr('stroke-linecap', 'butt')
+        .attr('stroke-width', '1')
     
     // Fill the squares with the color corresponding the matrix value
     row.selectAll(".cell")
@@ -126,15 +142,25 @@ function init(){
                 .text(nbp+" X "+nbp)
                 .property("value", nbp);
             });
-
-            // const transform = transforms[0];
-            // console.log(transform)
-
-            // const nbpix = nbpixels[0];
-            // console.log(nbpix)
-
+            
             // Plot a random image
-            randomImage()
+            randomImage()            
+
+            const transform = transforms[0];
+            console.log(transform)
+
+            const nbpix = nbpixels[0];
+            console.log(nbpix)
+
+            // get the mangled matrices
+            let url = "/apply_model/"+nbpix+"/"+transform
+            console.log(url)
+
+            d3.json(url).then((response) => {
+                console.log(response)
+            })
+
+
 
 
         });   
@@ -149,6 +175,14 @@ function init(){
 
 // Initialize the dashboard
 init();
+
+createImage()
+
+
+// d3.select("#svg-create-img")
+
+
+
 console.log("blabla")
 console.log(selector_nbpix.property("value"))   
 
