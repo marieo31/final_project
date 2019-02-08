@@ -28,6 +28,8 @@ function randomImage(){
     })    
 }
 
+
+
 function plotMatrix(values, svg_obj){
     // Plot a level of gray matrix
     // INPUTS:
