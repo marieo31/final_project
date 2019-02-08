@@ -35,6 +35,8 @@ function createImage(){
     var list = [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1]
 
     plotMatrix(list, d3.select("#svg-create-img") )
+
+
     
 }
 
@@ -152,8 +154,9 @@ function init(){
             const nbpix = nbpixels[0];
             console.log(nbpix)
 
-            // get the mangled matrices
-            let url = "/apply_model/"+nbpix+"/"+transform
+
+            // // get the mangled matrices
+            let url = "/applyModel/"+nbpix+transform
             console.log(url)
 
             d3.json(url).then((response) => {

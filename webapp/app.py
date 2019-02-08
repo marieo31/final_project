@@ -4,11 +4,27 @@ import codecs, json
 # import random
 
 import pandas as pd
+import re
+import keras
+from keras.models import Sequential
+from keras.utils import to_categorical
+from keras.layers import Dense
+from keras.models import load_model
+import os
+import h5py
+from keras import backend as K
+import tensorflow as tf
 
 
 app = Flask(__name__)
 
+
+
+
+
+
 #### Useful Functions #####
+#-------------------------------------------------------------------
 def arrayToList(arr):
     """ Transform a np.array of any size into a flat list """
     return [ii.item() for ii in arr.reshape((arr.size,1))]
@@ -34,11 +50,58 @@ def create_PPstar_translation(nbpix):
 
 def translate2left(mat):
     P,Pstar = create_PPstar_translation(mat.shape[0])
-    return mat@P    
+    return mat@P   
+
+def rot90ccw(mat):
+    """ Rotate an n by n matrix 90 deg counter clock wise"""
+    
+    # rotation matrix
+    rot = np.array([[0, 1],
+               [-1,0]])
+    # matrix coordinates
+    coord = [i for i in np.ndindex(mat.shape)]
+    nbp = mat.shape[0]    
+    # initialisations
+    coord_rot = []
+    mat_rot = np.zeros((mat.shape))    
+    # Apply the transformation on each pixel's coordinates
+    for ii in range(0,len(coord)):
+        # apply the rotation to the coordinate vector
+        coord_rot.append(coord[ii]@rot)
+        # reverse the row axis
+        coord_rot[ii][0] += nbp-1
+        # transform back into a tuple
+        coord_rot[ii] = tuple(coord_rot[ii])   
+        # fill up the rotated matrix
+        mat_rot[coord_rot[ii]] = mat[coord[ii]]        
+    
+    return mat_rot
+
+# def useModel(mdl_name):
+#     model = load_model(mdl_name)
+
+#     return  8  
+# model_mangler = None
+# graph_mangler = None
+
+# global graph_mangler
+
+
+# def load_mangler(model_name):
+#     global model_mangler
+#     global graph_mangler
+#     # model = Xception(weights="imagenet")
+#     # model_mangler = keras.models.load_model(model_name)
+#     graph_mangler = tf.get_default_graph()
+#     graph_mangler = K.get_session().graph 
+#     return
+
+
+#-------------------------------------------------------------------
 
 
 #### ROUTES #####
-#---------------
+#-------------------------------------------------------------------
 
 @app.route("/")
 def index():
@@ -66,32 +129,83 @@ def random_image(nbpix):
     rmd_lst = arrayToList(rmd_img)
     return jsonify(rmd_lst)
 
-@app.route("/apply_model/<nbpix>/<transform>")
-def apply_model(nbpix,transform):
+@app.route("/applyModel/<nbpixTransform>")
+def applyModel(nbpixTransform):
+    # we need to take appart the nb of pixel and the transformation type from the input
+    # collect the integers from 
+    nbpix = int(re.search(r'\d+', nbpixTransform).group())
+    transform_type = ''.join([i for i in nbpixTransform if not i.isdigit()])   
+    training_type = "full"
 
-    model_mangler = load_model(f"{transform_type}_{training_type}_mangler_{nbpix}x{nbpix}.h5")
-    model_corrector = load_model(f"{transform_type}_{training_type}_corrector_{nbpix}x{nbpix}.h5")
+    # mdl = os.path.join("models", f"{transform_type}_{training_type}_mangler_{nbpix}x{nbpix}.h5") 
+    # model = load_model("translation_full_corrector_4x4.h5")
+    
+    # f1 = h5py.File("translation_full_corrector_4x4.h5",'r+')  
+    # cut = 0.5   
+    # rmd_img = np.random.choice([0, 1], size=(nbpix,nbpix), p=[ 1-cut, cut])
+    # rmd_lst = arrayToList(rmd_img)
 
-    cut = 0.5
-    Mreal = np.random.choice([0, 1], size=(nbpix,nbpix), p=[ 1-cut, cut])
+    
+    global graph_mangler
+    graph_mangler = tf.get_default_graph()
+    with graph_mangler.as_default():
+        md = load_model("translation_full_corrector_4x4.h5")
+        test = [1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]
+        res = md.predict(np.expand_dims(test, axis=0))
+        # print(res)
 
-    # Predict the mangled image based on the real one
-    Mmang_ml = perform_prediction(Mreal,model_mangler ) # predict_mangler(Mreal)
-    # Predict the corrected input based on the real image
-    Mcor_ml = perform_prediction(Mreal, model_corrector)# predict_corrector(Mreal)
-    # Prediction of the output from the corrected input
-    if transform_type is "translation":
-        Mout_ml = translate2left(Mcor_ml)
-    elif transform_type is "rotation":
-        Mout_ml = rot90ccw(Mcor_ml)
+    K.clear_session()
 
-    mats = {"real": arrayToList(Mreal),
-            "mangled": arrayToList(Mmang_ml),
-            "corrected_input": arrayToList(Mcor_ml),
-            "output": arrayToList(Mout_ml)}
-    print(mats)
+    # load_mangler("translation_full_corrector_4x4.h5")
+    
+    # with graph_mangler.as_default():
+    #     # preds = model_mangler.predict()
+    #     test = [1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]
+    #     res = model_mangler.predict(np.expand_dims(test, axis=0))
+    #     print(res)
+    # global graph
+    # global model
+    # with graph.as_default():
+    # mdl_name = f"{transform_type}_{training_type}_mangler_{nbpix}x{nbpix}.h5"
+    # bla = useModel(mdl_name)
+    # model_mangler = load_model(mdl)
+    # model_corrector = load_model(f"{transform_type}_{training_type}_corrector_{nbpix}x{nbpix}.h5")
 
-    return jsonify(mats)
+    return jsonify(arrayToList(res))
+
+
+
+#-------------------------------------------------------------------
+
+
+
+
+# @app.route("/apply_model/<nbpixtransform>")
+# def apply_model(nbpixtransform):
+
+#     # 
+#     # 
+
+#     # cut = 0.5
+#     # Mreal = np.random.choice([0, 1], size=(nbpix,nbpix), p=[ 1-cut, cut])
+#     Mreal = [2]
+#     # # Predict the mangled image based on the real one
+#     # Mmang_ml = perform_prediction(Mreal,model_mangler ) # predict_mangler(Mreal)
+#     # # Predict the corrected input based on the real image
+#     # Mcor_ml = perform_prediction(Mreal, model_corrector)# predict_corrector(Mreal)
+#     # # Prediction of the output from the corrected input
+#     # if transform_type is "translation":
+#     #     Mout_ml = translate2left(Mcor_ml)
+#     # elif transform_type is "rotation":
+#     #     Mout_ml = rot90ccw(Mcor_ml)
+
+#     # mats = {"real": arrayToList(Mreal),
+#     #         "mangled": arrayToList(Mmang_ml),
+#     #         "corrected_input": arrayToList(Mcor_ml),
+#     #         "output": arrayToList(Mout_ml)}
+#     # print(mats)
+
+#     return jsonify(arrayToList(Mreal))
     # plot the results
     # vis_matrices(Mreal, Mmang_ml,Mcor_ml, Mout_ml)
 
