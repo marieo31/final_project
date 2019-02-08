@@ -6,20 +6,148 @@
     <title>Home page</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/css/style.css">
     <!-- <link rel="stylesheet" type="text/css" media="screen" href="main.css" /> -->
     <!-- <script src="main.js"></script> -->
 </head>
-<body>
-    
-    <h1>First try</h1>
+<body style="background-color: rgb(124, 123, 128)">
 
-    <select id="selTransform" onchange="transformChanged(this.value)"></select>
-    <select id="selNBpix" onchange="nbpixChanged(this.value)"></select>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 jumbotron text-center">
+                <h1><font color= "#428bca"> Retinal Implant Image Processing Dashboard</font></h1>
+            </div>
+        </div>
+    </div>
+                
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <div class="col-md-1"></div>
+            <div class="col-md-1"></div>
+            <div class="col-md-1"></div>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+            <a class="navbar-brand" href="index.html" style="color: white; background-color:rgb(66,139,202)">
+            <i class="glyphicon glyphicon-wrench"></i>
+            </a>
+            <!-- INSERT HTML LINK TO JUPYTER NOTEBOOK below -->
+            <li><a href="taster.html">Code</a></li> 
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid">
+<div class="row">
+    <div class="col-md-4">
+        <div class="well">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Number of Pixels</h3>
+                </div>
+                <div id="sample-metadata" class="panel-body">
+                    <!-- Selection of the number of pixels -->
+                    <select id="selNBpix" onchange="nbpixChanged(this.value)"></select>
+                    <!-- <select id = "myList">
+                        <option value = "1">1</option>
+                        <option value = "2">2</option>
+                        <option value = "3">3</option>
+                        <option value = "4">4</option>
+                    </select> -->
+                </div>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Transformation Type</h3>
+                </div>
+                <div id="sample-metadata" class="panel-body">
+                    <!-- Selection of the transformation -->
+                    <select id="selTransform" onchange="transformChanged(this.value)"></select>
+                    <!-- <select id = "List2">
+                        <option value = "translation">Translation</option>
+                    </select> -->
+                </div>
+            </div>
+        </div>
+
+        <div class="well">
+            <button class="btn btn-block btn-primary" id="random_img_btn" onclick="randomImage()">Random Input</button>
+            <div id="svg-random-img"></div>
+        </div>
+        <div class="well">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Create Input</h3>
+                </div>
+                <div id="sample-metadata" class="panel-body"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="well">
+            <div class="row" style = "padding-bottom: 10px">
+                <div class="col-lg-6 col-md-6 col-sm-3 col-xs-3">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">                        
+                            <h3 class="panel-title">Input</h3>
+                        </div>
+                        <div id="sample-metadata" class="panel-body"></div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-3 col-xs-3">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Corrected Input</h3>
+                        </div>
+                        <div id="sample-metadata" class="panel-body"></div>
+                    </div>
+                </div>
+                <br><br><br>
+                <div class="col-md-12">
+                    <div class="row" style = "padding-bottom: 0px">
+                        <div class="col-lg-6 col-md-6 col-sm-3 col-xs-3">
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">                                
+                                    <h3 class="panel-title">Mangled Output</h3>
+                                </div>
+                                <div id="sample-metadata" class="panel-body"></div>
+                            </div>
+                        </div>
+                    <div class="col-lg-6 col-md-6 col-sm-3 col-xs-3">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                
+                                <h3 class="panel-title">Output</h3>
+                            </div>
+                            <div id="sample-metadata" class="panel-body"></div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+    <!-- <select id="selTransform" onchange="transformChanged(this.value)"></select>
+    <select id="selNBpix" onchange="nbpixChanged(this.value)"></select> -->
     <!-- <a href="/random_image" class="btn btn-primary" role="button">Random image</a> -->
-    <a id="random_img_btn" class="btn btn-primary" onclick="randomImage()"  role="button">Random image</a>
+    <!-- <a id="random_img_btn" class="btn btn-primary" onclick="randomImage()"  role="button">Random image</a> -->
+    <!-- <div id="svg-random-img"></div> -->
 
 
-    <div id="svg-random-img"></div>
+
 
     <script src="http://d3js.org/d3.v2.min.js?2.8.1"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.5.0/d3.js"></script>

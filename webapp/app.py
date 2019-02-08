@@ -42,6 +42,11 @@ def random_image(nbpix):
     # transform the np array to a flat list
     rmd_lst = arrayToList(rmd_img)
     return jsonify(rmd_lst)
+
+# @app.route("/apply_model/<nbpix>/<transform>")
+# def apply_model(nbpix,transform):
+
+
     
 
 
