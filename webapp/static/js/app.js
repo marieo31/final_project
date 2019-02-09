@@ -40,8 +40,89 @@ function createImage(){
     
 }
 
+function gridData(nbpix,values) {
+	var data = new Array();
+	var xpos = 1; //starting xpos and ypos at 1 so the stroke will show when we make the grid below
+	var ypos = 1;
+	var width = 50;
+	var height = 50;
+	var click = 0;
+	
+    // iterate for rows	
+    var ii = 0;
+	for (var row = 0; row < nbpix; row++) {
+        data.push( new Array() );
+        ii = ii+1
+		
+		// iterate for cells/columns inside rows
+		for (var column = 0; column < nbpix; column++) {
+            ii = ii+1
+			data[row].push({
+				x: xpos,
+				y: ypos,
+				width: width,
+				height: height,
+                click: click,
+                value: values[ii]
+			})
+			// increment the x position. I.e. move it over by 50 (width variable)
+			xpos += width;
+        }
+        
+		// reset the x position after a row is complete
+		xpos = 1;
+		// increment the y position for the next row. Move it down 50 (height variable)
+		ypos += height;	
+    }
+    console.log(ii)
+	return data;
+}
 
+console.log("caralho");
+var gridData = gridData(5,[0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1]);	
+// I like to log the data to the console for quick debugging
+console.log(gridData);
 
+var grid = d3.select("#svg-create-img")
+	.append("svg")
+	.attr("width","510px")
+	.attr("height","510px");
+	
+var row = grid.selectAll(".row")
+	.data(gridData)
+	.enter().append("g")
+    .attr("class", "row");
+
+// Define the colormap
+var colorMap = d3.scale.linear()
+    .domain([0, 1])
+    .range(["white", "black"]);       
+
+	
+var column = row.selectAll(".square")
+	.data(function(d) { return d; })
+	.enter().append("rect")
+	.attr("class","square")
+	.attr("x", function(d) { return d.x; })
+	.attr("y", function(d) { return d.y; })
+	.attr("width", function(d) { return d.width; })
+	.attr("height", function(d) { return d.height; })
+	.style("fill", "#fff")
+	.style("stroke", "#222")
+	.on('click', function(d) {
+       d.click ++;
+       if ((d.click)%2 == 0 ) { 
+           d3.select(this).style("fill","#fff");
+           d.value = 0;
+         }
+	   if ((d.click)%2 == 1 ) { 
+           d3.select(this).style("fill","#000000");
+           d.value = 1;
+         } 
+        //  console.log(gridData)          
+    });
+
+   
 
 
 
@@ -122,6 +203,10 @@ function plotMatrix(values, svg_obj){
 
 }
 
+
+
+
+
 function init(){
     
     // Fill the drop down menu for choosing a transformation    
@@ -179,7 +264,7 @@ function init(){
 // Initialize the dashboard
 init();
 
-createImage()
+// createImage()
 
 
 // d3.select("#svg-create-img")

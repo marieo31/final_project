@@ -77,6 +77,41 @@ def rot90ccw(mat):
     
     return mat_rot
 
+# Function to split the matrix into matrices of one pixel
+def split_matrix(nbpix, mat):
+    """ Split a matrix into matrices of one pixel"""
+    # find the indexes of the ones values in the matrix
+    idx_arr = np.where(mat.reshape(1,nbpix**2)[0]>0)[0]
+    # transform from an array to a list
+    idx_lst = [idx_arr.item(ii) for ii in range(0,len(idx_arr))] 
+    mat_split = np.zeros((len(idx_lst), nbpix**2))
+    for ii in range(0,len(idx_lst)):
+        mat_split[ii,idx_lst[ii]] = 1    
+    return mat_split
+
+def perform_prediction(nbpix, mat, model):
+    """ Predict the output with a trained model"""
+    # split the input matrix into matrices of one pixel
+    mat_split = split_matrix(nbpix, mat)
+    nb_dark_pxl = mat_split.shape[0]
+    
+    # initializations
+    res = np.zeros((nb_dark_pxl, nbpix**2))
+    Mres = np.zeros((nbpix,nbpix))
+    # Loop on all the one pixels array
+    for ii in range(0,nb_dark_pxl):
+        # Apply the models to the one pixel matrices
+        print(mat_split[ii])
+        res[ii,:] = model.predict(np.expand_dims(mat_split[ii], axis=0))
+        # Sum up the results to construct the matrices
+        Mres = Mres + res[ii,:].reshape(nbpix,nbpix)
+    return Mres
+
+def perform_prediction_dbg(model):
+    test = [1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]
+    res = model.predict(np.expand_dims(test, axis=0))
+    return res
+
 # def useModel(mdl_name):
 #     model = load_model(mdl_name)
 
@@ -102,19 +137,18 @@ def rot90ccw(mat):
 
 #### ROUTES #####
 #-------------------------------------------------------------------
-
 @app.route("/")
 def index():
     return render_template('index.html')
 
 @app.route("/transform_types")
 def transform_types():
-    """ Return the list of transformation types """
+    """ Return the list of transformation types to fill the selection list """
     return jsonify(["rotation","translation"])
 
 @app.route("/nbpixels")
 def nbpixels():
-    """ Return the list of nb of pixels"""
+    """ Return the list of nb of pixels to fill the selection list"""
     return jsonify(arrayToList(np.arange(4,16,2)))
 
 @app.route("/random_image/<nbpix>")
@@ -132,11 +166,11 @@ def random_image(nbpix):
 @app.route("/applyModel/<nbpixTransform>")
 def applyModel(nbpixTransform):
     # we need to take appart the nb of pixel and the transformation type from the input
-    # collect the integers from 
     nbpix = int(re.search(r'\d+', nbpixTransform).group())
     transform_type = ''.join([i for i in nbpixTransform if not i.isdigit()])   
-    training_type = "full"
+    training_type = "full" # for now we only use fully trained models
 
+    
     # mdl = os.path.join("models", f"{transform_type}_{training_type}_mangler_{nbpix}x{nbpix}.h5") 
     # model = load_model("translation_full_corrector_4x4.h5")
     
@@ -145,13 +179,18 @@ def applyModel(nbpixTransform):
     # rmd_img = np.random.choice([0, 1], size=(nbpix,nbpix), p=[ 1-cut, cut])
     # rmd_lst = arrayToList(rmd_img)
 
-    
+
     global graph_mangler
     graph_mangler = tf.get_default_graph()
     with graph_mangler.as_default():
-        md = load_model("translation_full_corrector_4x4.h5")
-        test = [1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]
-        res = md.predict(np.expand_dims(test, axis=0))
+        # model name
+        mangler_name = os.path.join("models", f"{transform_type}_{training_type}_mangler_{nbpix}x{nbpix}.h5") 
+        md = load_model(mangler_name)
+        # res = perform_prediction_dbg(md)
+        test = np.asarray([1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.])
+        Mmang_ml = perform_prediction(nbpix, test, md)
+        # 
+        # res = md.predict(np.expand_dims(test, axis=0))
         # print(res)
 
     K.clear_session()
@@ -171,7 +210,8 @@ def applyModel(nbpixTransform):
     # model_mangler = load_model(mdl)
     # model_corrector = load_model(f"{transform_type}_{training_type}_corrector_{nbpix}x{nbpix}.h5")
 
-    return jsonify(arrayToList(res))
+    return jsonify(arrayToList(Mmang_ml))
+    
 
 
 
