@@ -19,18 +19,14 @@ import tensorflow as tf
 app = Flask(__name__)
 
 
-
-
-
-
 #### Useful Functions #####
 #-------------------------------------------------------------------
 def arrayToList(arr):
     """ Transform a np.array of any size into a flat list """
     return [ii.item() for ii in arr.reshape((arr.size,1))]
 
-# Transformation matrices
 def create_PPstar_translation(nbpix):
+    """ Create the transformation matrices for the translation transformation """
     # nb of pixels translated
     nbt = int(np.round(0.25*nbpix))
 
@@ -77,7 +73,6 @@ def rot90ccw(mat):
     
     return mat_rot
 
-# Function to split the matrix into matrices of one pixel
 def split_matrix(nbpix, mat):
     """ Split a matrix into matrices of one pixel"""
     # find the indexes of the ones values in the matrix
@@ -101,35 +96,11 @@ def perform_prediction(nbpix, mat, model):
     # Loop on all the one pixels array
     for ii in range(0,nb_dark_pxl):
         # Apply the models to the one pixel matrices
-        print(mat_split[ii])
+        # print(mat_split[ii])
         res[ii,:] = model.predict(np.expand_dims(mat_split[ii], axis=0))
         # Sum up the results to construct the matrices
         Mres = Mres + res[ii,:].reshape(nbpix,nbpix)
     return Mres
-
-def perform_prediction_dbg(model):
-    test = [1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]
-    res = model.predict(np.expand_dims(test, axis=0))
-    return res
-
-# def useModel(mdl_name):
-#     model = load_model(mdl_name)
-
-#     return  8  
-# model_mangler = None
-# graph_mangler = None
-
-# global graph_mangler
-
-
-# def load_mangler(model_name):
-#     global model_mangler
-#     global graph_mangler
-#     # model = Xception(weights="imagenet")
-#     # model_mangler = keras.models.load_model(model_name)
-#     graph_mangler = tf.get_default_graph()
-#     graph_mangler = K.get_session().graph 
-#     return
 
 
 #-------------------------------------------------------------------
@@ -163,31 +134,23 @@ def random_image(nbpix):
     rmd_lst = arrayToList(rmd_img)
     return jsonify(rmd_lst)
 
-@app.route("/applyModel/<nbpixTransform>")
-def applyModel(nbpixTransform):
+@app.route("/applyModel_old/<nbpixTransform>")
+def applyModel_old(nbpixTransform):
     # we need to take appart the nb of pixel and the transformation type from the input
-    nbpix = int(re.search(r'\d+', nbpixTransform).group())
-    transform_type = ''.join([i for i in nbpixTransform if not i.isdigit()])   
-    training_type = "full" # for now we only use fully trained models
-
     
-    # mdl = os.path.join("models", f"{transform_type}_{training_type}_mangler_{nbpix}x{nbpix}.h5") 
-    # model = load_model("translation_full_corrector_4x4.h5")
-    
-    # f1 = h5py.File("translation_full_corrector_4x4.h5",'r+')  
-    # cut = 0.5   
-    # rmd_img = np.random.choice([0, 1], size=(nbpix,nbpix), p=[ 1-cut, cut])
-    # rmd_lst = arrayToList(rmd_img)
-
-
     global graph_mangler
     graph_mangler = tf.get_default_graph()
     with graph_mangler.as_default():
+
+        nbpix = int(re.search(r'\d+', nbpixTransform).group())
+        transform_type = ''.join([i for i in nbpixTransform if not i.isdigit()])   
+        training_type = "full" # for now we only use fully trained models
         # model name
         mangler_name = os.path.join("models", f"{transform_type}_{training_type}_mangler_{nbpix}x{nbpix}.h5") 
         md = load_model(mangler_name)
-        # res = perform_prediction_dbg(md)
         test = np.asarray([1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.])
+
+        # test = np.asarray([1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.])
         Mmang_ml = perform_prediction(nbpix, test, md)
         # 
         # res = md.predict(np.expand_dims(test, axis=0))
@@ -195,64 +158,42 @@ def applyModel(nbpixTransform):
 
     K.clear_session()
 
-    # load_mangler("translation_full_corrector_4x4.h5")
-    
-    # with graph_mangler.as_default():
-    #     # preds = model_mangler.predict()
-    #     test = [1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]
-    #     res = model_mangler.predict(np.expand_dims(test, axis=0))
-    #     print(res)
-    # global graph
-    # global model
-    # with graph.as_default():
-    # mdl_name = f"{transform_type}_{training_type}_mangler_{nbpix}x{nbpix}.h5"
-    # bla = useModel(mdl_name)
-    # model_mangler = load_model(mdl)
-    # model_corrector = load_model(f"{transform_type}_{training_type}_corrector_{nbpix}x{nbpix}.h5")
-
     return jsonify(arrayToList(Mmang_ml))
+
+
+@app.route("/applyModel/<nbpixTransformMat>")
+def applyModel(nbpixTransformMat):
+    # we need to take appart the nb of pixel and the transformation type from the input
+    # the nb of pixel will be the first integer
+    nbpix = int(re.search(r'\d+', nbpixTransformMat).group())
+    transform_type = ''.join([i for i in nbpixTransformMat if not i.isdigit()])   
+    training_type = "full" # for now we only use fully trained models
+
+    
+    global graph_mangler
+    graph_mangler = tf.get_default_graph()
+    with graph_mangler.as_default():
+        # test = np.asarray([1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.])
+        
+
+        # model name
+        mangler_name = os.path.join("models", f"{transform_type}_{training_type}_mangler_{nbpix}x{nbpix}.h5") 
+        # Loading the model
+        md = load_model(mangler_name)
+        # Build the array of random value from the route url
+        input_values = np.asarray([int(mm) for mm in nbpixTransformMat[-nbpix**2:]])
+        # Predict the mangled values        
+        Mmang_ml = perform_prediction(nbpix, input_values, md)
+        
+
+    K.clear_session()
+
+    return jsonify(arrayToList(Mmang_ml))    
     
 
 
 
 #-------------------------------------------------------------------
-
-
-
-
-# @app.route("/apply_model/<nbpixtransform>")
-# def apply_model(nbpixtransform):
-
-#     # 
-#     # 
-
-#     # cut = 0.5
-#     # Mreal = np.random.choice([0, 1], size=(nbpix,nbpix), p=[ 1-cut, cut])
-#     Mreal = [2]
-#     # # Predict the mangled image based on the real one
-#     # Mmang_ml = perform_prediction(Mreal,model_mangler ) # predict_mangler(Mreal)
-#     # # Predict the corrected input based on the real image
-#     # Mcor_ml = perform_prediction(Mreal, model_corrector)# predict_corrector(Mreal)
-#     # # Prediction of the output from the corrected input
-#     # if transform_type is "translation":
-#     #     Mout_ml = translate2left(Mcor_ml)
-#     # elif transform_type is "rotation":
-#     #     Mout_ml = rot90ccw(Mcor_ml)
-
-#     # mats = {"real": arrayToList(Mreal),
-#     #         "mangled": arrayToList(Mmang_ml),
-#     #         "corrected_input": arrayToList(Mcor_ml),
-#     #         "output": arrayToList(Mout_ml)}
-#     # print(mats)
-
-#     return jsonify(arrayToList(Mreal))
-    # plot the results
-    # vis_matrices(Mreal, Mmang_ml,Mcor_ml, Mout_ml)
-
-
-
-    
-
 
 if __name__ == "__main__":
     app.run(debug=True)    
