@@ -53,7 +53,6 @@ function gridData(values) {
 	let click = 0;
 	
     // iterate for rows	
-    console.log(nbpix)
     let ii = 0;
 	for (var rr = 0; rr < nbpix; rr++) {
         data.push( new Array() );
@@ -101,7 +100,6 @@ function randomImage(){
             +selector_nbpix.property("value") // the nb of pixel
             +selector_transform.property("value") // the type of transformation
             +resp.join("") // the matrix values concatenated into a string
-        console.log(url)
 
         d3.json(url).then((mangled) => {
             // Plot the mangled matrix
@@ -179,7 +177,6 @@ function createdImage(){
     let ci_val = gd_create.map(function(d){
         return d.map(function(bb) {return bb.value})
     })  
-    console.log(ci_val.flat().join(""))
 
     // Plot the input image
     plotMatrix(sel_input_img, gd_create)
@@ -190,8 +187,7 @@ function createdImage(){
     let url = "/applyModel/"
         +selector_nbpix.property("value") // the nb of pixel
         +selector_transform.property("value") // the type of transformation
-        +ci_val.flat().join("") // the matrix values concatenated into a string
-    console.log(url)
+        +ci_val.flat().join("") // the matrix values concatenated into a string    
 
     d3.json(url).then((mangled) => {
         // Plot the mangled matrix
@@ -231,11 +227,7 @@ function init(){
             });
 
             const transform = transforms[0];
-            console.log(transform)
-
             const nbpix = nbpixels[0];
-            console.log(nbpix)            
-
             
             // Plot a random image
             randomImage()
@@ -245,17 +237,6 @@ function init(){
             plotMatrix(selector_crt_image, gd_create )
             // Make it clickable
             gd_create = makeClickable(selector_crt_image, gd_create)
-
-            // // // get the mangled matrices
-            // let url = "/applyModel_old/"+nbpix+transform
-            // console.log(url)
-
-            // d3.json(url).then((response) => {
-            //     console.log(response)
-            // })
-
-
-
 
         });   
       });
@@ -269,95 +250,3 @@ function init(){
 
 // Initialize the dashboard
 init();
-
-// createImage()
-
-
-// d3.select("#svg-create-img")
-
-
-
-console.log("blabla")
-console.log(selector_nbpix.property("value"))   
-
-
-
-
-// TRASH
-
-// function plotMatrix2(values, svg_obj){
-//     // Plot a level of gray matrix
-//     // INPUTS:
-//     // @values: list of values constituing the matrix
-//     // @svg_obj: d3 selection of the division where to plot the matrix
-
-//     // nb of pixels
-//     let nbpix = parseInt(Math.sqrt(values.length))
-
-//     // building the matrix
-//     var numrows = nbpix;
-//     var numcols = nbpix;     
-//     var matrix = new Array(numrows);
-//     var bb = 0
-//     for (var i = 0; i < numrows; i++) {
-//         matrix[i] = new Array(numcols);
-//         for (var j = 0; j < numcols; j++) {                 
-//             matrix[i][j] = values[bb]
-//             bb = bb+1
-//         }
-//       }    
-
-//     // clear the svg obj
-//     svg_obj.html("")
-
-//     // Build the background
-//     var svg = svg_obj.append("svg")
-//             .attr("width", width + margin.left + margin.right)
-//             .attr("height", height + margin.top + margin.bottom)
-//             .style("margin-left", -margin.left + "px")
-//           .append("g")
-//             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");            
-//     svg.append("rect")
-//         .attr("class", "background")
-//         .attr("width", width)
-//         .attr("height", height);
-
-//     // Create the x and y scales
-//     var x = d3.scale.ordinal()
-//         .domain(d3.range(numcols))
-//         .rangeBands([0, width]);        
-//     var y = d3.scale.ordinal()
-//         .domain(d3.range(numrows))
-//         .rangeBands([0, height]);        
-            
-//     // Define the colormap
-//     var colorMap = d3.scale.linear()
-//         .domain([0, 1])
-//         .range(["white", "black"]);    
-           
-//     // Build the grid of nbpix x nbpix squares
-//     var row = svg.selectAll(".row")
-//         .data(matrix)
-//         .enter()
-//         .append("g")
-//         .attr("class", "row")
-//         .attr("transform", function(d, i) { return "translate(0," + y(i) + ")"; });    
-//     row.selectAll(".cell")
-//         .data(function(d) { return d; })
-//         .enter()
-//         .append("rect")
-//         .attr("class", "cell")
-//         .attr("x", function(d, i) { return x(i); })
-//         .attr("width", x.rangeBand())
-//         .attr("height", y.rangeBand())
-//         // .style("stroke-width", 0.1);
-//         .attr('stroke', '#2378ae')
-//         .attr('stroke-linecap', 'butt')
-//         .attr('stroke-width', '1')
-    
-//     // Fill the squares with the color corresponding the matrix value
-//     row.selectAll(".cell")
-//         .data(function(d, i) { return matrix[i]; })
-//         .style("fill", colorMap);
-
-// }
