@@ -40,7 +40,12 @@ function createImage(){
     
 }
 
-function gridData(nbpix,values) {
+// Create the dataset to build the matrices
+function gridData(values) {
+    // INPUTS:
+    // @nbpix: nb of pixels
+    // @values: list containing all the values
+    let nbpix = parseInt(Math.sqrt(values.length))
 	var data = new Array();
 	var xpos = 1; //starting xpos and ypos at 1 so the stroke will show when we make the grid below
 	var ypos = 1;
@@ -74,14 +79,23 @@ function gridData(nbpix,values) {
 		// increment the y position for the next row. Move it down 50 (height variable)
 		ypos += height;	
     }
-    console.log(ii)
 	return data;
 }
 
-console.log("caralho");
-var gridData = gridData(5,[0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1]);	
+
+
+
+
+var gridData = gridData([0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1]);	
 // I like to log the data to the console for quick debugging
 console.log(gridData);
+
+
+// function plotMatrix(svg_obj, gridData){
+
+
+// }
+
 
 var grid = d3.select("#svg-create-img")
 	.append("svg")
@@ -107,8 +121,15 @@ var column = row.selectAll(".square")
 	.attr("y", function(d) { return d.y; })
 	.attr("width", function(d) { return d.width; })
 	.attr("height", function(d) { return d.height; })
-	.style("fill", "#fff")
-	.style("stroke", "#222")
+    // .style("fill", "#fff")
+    .style("fill", function(d) {return colorMap(d.value)})
+    .style("stroke", "#222")
+
+// Make the squares of an svg obj clickable
+function makeClickable(svg_obj, gridData){
+    svg_obj
+    .data(gridData)
+    .selectAll(".square")    
 	.on('click', function(d) {
        d.click ++;
        if ((d.click)%2 == 0 ) { 
@@ -118,9 +139,14 @@ var column = row.selectAll(".square")
 	   if ((d.click)%2 == 1 ) { 
            d3.select(this).style("fill","#000000");
            d.value = 1;
-         } 
-        //  console.log(gridData)          
-    });
+         }      
+    });    
+
+    return gridData
+}    
+
+
+gridData2 = makeClickable(d3.select("#svg-create-img"), gridData)
 
    
 
