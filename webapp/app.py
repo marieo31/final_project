@@ -169,13 +169,12 @@ def applyModel(nbpixTransformMat):
     transform_type = ''.join([i for i in nbpixTransformMat if not i.isdigit()])   
     training_type = "full" # for now we only use fully trained models
 
+    mang_matrices = {}
     
     global graph_mangler
     graph_mangler = tf.get_default_graph()
     with graph_mangler.as_default():
-        # test = np.asarray([1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.])
-        
-
+                
         # model name
         mangler_name = os.path.join("models", f"{transform_type}_{training_type}_mangler_{nbpix}x{nbpix}.h5") 
         # Loading the model
@@ -184,11 +183,16 @@ def applyModel(nbpixTransformMat):
         input_values = np.asarray([int(mm) for mm in nbpixTransformMat[-nbpix**2:]])
         # Predict the mangled values        
         Mmang_ml = perform_prediction(nbpix, input_values, md)
+
+        mang_matrices["Mmang"] = arrayToList(Mmang_ml)
         
 
     K.clear_session()
 
-    return jsonify(arrayToList(Mmang_ml))    
+    # mang_matrices = {"Mmang": arrayToList(Mmang_ml)}
+
+    # return jsonify(arrayToList(Mmang_ml))    
+    return jsonify(mang_matrices)    
     
 
 

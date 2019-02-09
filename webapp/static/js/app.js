@@ -4,6 +4,13 @@ var selector_transform = d3.select("#selTransform");
 var selector_nbpix = d3.select("#selNBpix")
 var selector_rdm_image = d3.select("#svg-random-img")
 var selector_crt_image = d3.select("#svg-create-img")
+var sel_input_img = d3.select("#svg-input-img")
+var sel_mang_img = d3.select("#svg-mang-img")
+var sel_cor_img = d3.select("#ssvg-cor-img")
+var sel_out_img = d3.select("#svg-out-img")
+
+
+
 
 // Layout variables
 var margin = {top: 20, right: 100, bottom: 50, left: 100},
@@ -76,19 +83,16 @@ function randomImage(){
     let url = "/random_image/"+selector_nbpix.property("value")
     d3.json(url).then(function(resp){
         console.log(resp)
-
-        // Generate the data to plot
-        gdr = gridData(resp)
         
         // Plot the random matrix
-        plotMatrix(selector_rdm_image, gdr)
+        // plotMatrix(selector_rdm_image, gridData(resp))
+
+        // Plot the input image
+        plotMatrix(sel_input_img, gridData(resp))
 
         // Call the app.py to get the mangled and corrected outputs
         // It may be a little "rustic" but we chose to transmit the matrix to the app.py,
         // by concatenating all the values in the route
-        console.log(resp.join(""))
-
-
         let url = "/applyModel/"
             +selector_nbpix.property("value") // the nb of pixel
             +selector_transform.property("value") // the type of transformation
@@ -96,7 +100,11 @@ function randomImage(){
         console.log(url)
 
         d3.json(url).then((mangled) => {
-            console.log(mangled)
+            console.log(mangled.Mmang)
+            
+            plotMatrix(sel_mang_img, gridData(mangled.Mmang))
+
+
         })
 
         
@@ -216,13 +224,13 @@ function init(){
             // Make it clickable
             var gd_create_clc = makeClickable(selector_crt_image, gd_create)
 
-            // // get the mangled matrices
-            let url = "/applyModel_old/"+nbpix+transform
-            console.log(url)
+            // // // get the mangled matrices
+            // let url = "/applyModel_old/"+nbpix+transform
+            // console.log(url)
 
-            d3.json(url).then((response) => {
-                console.log(response)
-            })
+            // d3.json(url).then((response) => {
+            //     console.log(response)
+            // })
 
 
 
