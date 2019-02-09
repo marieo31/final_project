@@ -44,16 +44,21 @@ def create_PPstar_translation(nbpix):
     Pstar = np.linalg.inv(P)        
     return (P,Pstar)
 
-def translate2left(mat):
-    P,Pstar = create_PPstar_translation(mat.shape[0])
-    return mat@P   
+def translate2right(mat, nbpix):
+    P,Pstar = create_PPstar_translation(nbpix)
+    mat = np.asarray(mat).reshape(nbpix,nbpix)
 
-def rot90ccw(mat):
+    return mat@Pstar   
+
+def rot90cw(mat, nbpix):
     """ Rotate an n by n matrix 90 deg counter clock wise"""
+
+    mat = np.asarray(mat).reshape(nbpix,nbpix)
+
     
     # rotation matrix
-    rot = np.array([[0, 1],
-               [-1,0]])
+    rot = np.array([[0, -1],
+               [1,0]])
     # matrix coordinates
     coord = [i for i in np.ndindex(mat.shape)]
     nbp = mat.shape[0]    
@@ -120,7 +125,7 @@ def transform_types():
 @app.route("/nbpixels")
 def nbpixels():
     """ Return the list of nb of pixels to fill the selection list"""
-    return jsonify(arrayToList(np.arange(4,16,2)))
+    return jsonify(arrayToList(np.arange(4,10,2)))
 
 @app.route("/random_image/<nbpix>")
 def random_image(nbpix):
@@ -134,32 +139,6 @@ def random_image(nbpix):
     rmd_lst = arrayToList(rmd_img)
     return jsonify(rmd_lst)
 
-@app.route("/applyModel_old/<nbpixTransform>")
-def applyModel_old(nbpixTransform):
-    # we need to take appart the nb of pixel and the transformation type from the input
-    
-    global graph_mangler
-    graph_mangler = tf.get_default_graph()
-    with graph_mangler.as_default():
-
-        nbpix = int(re.search(r'\d+', nbpixTransform).group())
-        transform_type = ''.join([i for i in nbpixTransform if not i.isdigit()])   
-        training_type = "full" # for now we only use fully trained models
-        # model name
-        mangler_name = os.path.join("models", f"{transform_type}_{training_type}_mangler_{nbpix}x{nbpix}.h5") 
-        md = load_model(mangler_name)
-        test = np.asarray([1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.])
-
-        # test = np.asarray([1., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.])
-        Mmang_ml = perform_prediction(nbpix, test, md)
-        # 
-        # res = md.predict(np.expand_dims(test, axis=0))
-        # print(res)
-
-    K.clear_session()
-
-    return jsonify(arrayToList(Mmang_ml))
-
 
 @app.route("/applyModel/<nbpixTransformMat>")
 def applyModel(nbpixTransformMat):
@@ -171,6 +150,7 @@ def applyModel(nbpixTransformMat):
 
     mang_matrices = {}
     
+    # The mangled image
     global graph_mangler
     graph_mangler = tf.get_default_graph()
     with graph_mangler.as_default():
@@ -183,11 +163,32 @@ def applyModel(nbpixTransformMat):
         input_values = np.asarray([int(mm) for mm in nbpixTransformMat[-nbpix**2:]])
         # Predict the mangled values        
         Mmang_ml = perform_prediction(nbpix, input_values, md)
-
+        # save the matrix in the output dict
         mang_matrices["Mmang"] = arrayToList(Mmang_ml)
-        
-
     K.clear_session()
+
+    # The corrected input
+    global graph_cor
+    graph_cor = tf.get_default_graph()
+    with graph_cor.as_default():
+        # model name
+        cor_name = os.path.join("models", f"{transform_type}_{training_type}_corrector_{nbpix}x{nbpix}.h5") 
+        # Loading the model
+        md_cor = load_model(cor_name)
+        # Build the array of random value from the route url
+        input_values = np.asarray([int(mm) for mm in nbpixTransformMat[-nbpix**2:]])
+        # Predict the corrected values
+        Mcor_ml = perform_prediction(nbpix,input_values,md_cor)
+        # save the matrix in the output dict
+        mang_matrices["Mcor"] = arrayToList(Mcor_ml)
+    K.clear_session()
+
+    # @TODO: debug the corrected output!!
+    # # The output from the corrected input
+    # if transform_type == "translation":
+    #     mang_matrices["Mout"] = translate2right(mang_matrices["Mcor"],nbpix)
+    # elif transform_type == "rotation":
+    #     mang_matrices["Mout"] = rot90cw(mang_matrices["Mcor"], nbpix)
 
     # mang_matrices = {"Mmang": arrayToList(Mmang_ml)}
 

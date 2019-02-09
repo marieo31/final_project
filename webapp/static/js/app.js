@@ -6,7 +6,7 @@ var selector_rdm_image = d3.select("#svg-random-img")
 var selector_crt_image = d3.select("#svg-create-img")
 var sel_input_img = d3.select("#svg-input-img")
 var sel_mang_img = d3.select("#svg-mang-img")
-var sel_cor_img = d3.select("#ssvg-cor-img")
+var sel_cor_img = d3.select("#svg-cor-img")
 var sel_out_img = d3.select("#svg-out-img")
 
 
@@ -21,6 +21,8 @@ var margin = {top: 20, right: 100, bottom: 50, left: 100},
 // Functions
 //-------------------------------------
 function transformChanged(newTransfrom) {
+    randomImage()
+
   }
 
 function nbpixChanged(newNBpix){
@@ -82,7 +84,7 @@ function randomImage(){
     // create the random matrix
     let url = "/random_image/"+selector_nbpix.property("value")
     d3.json(url).then(function(resp){
-        console.log(resp)
+        // console.log(resp)
         
         // Plot the random matrix
         // plotMatrix(selector_rdm_image, gridData(resp))
@@ -97,12 +99,17 @@ function randomImage(){
             +selector_nbpix.property("value") // the nb of pixel
             +selector_transform.property("value") // the type of transformation
             +resp.join("") // the matrix values concatenated into a string
-        console.log(url)
+        // console.log(url)
 
         d3.json(url).then((mangled) => {
             console.log(mangled.Mmang)
             
+            // Plot the mangled matrix
             plotMatrix(sel_mang_img, gridData(mangled.Mmang))
+            // Plot the corrected input
+            plotMatrix(sel_cor_img, gridData(mangled.Mcor))
+            // Plot the output from the corrected input
+            plotMatrix(sel_out_img, gridData(mangled.Mout))
 
 
         })
