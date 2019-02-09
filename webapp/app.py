@@ -44,21 +44,17 @@ def create_PPstar_translation(nbpix):
     Pstar = np.linalg.inv(P)        
     return (P,Pstar)
 
-def translate2right(mat, nbpix):
-    P,Pstar = create_PPstar_translation(nbpix)
-    mat = np.asarray(mat).reshape(nbpix,nbpix)
 
-    return mat@Pstar   
+def translate2left(mat):
+    P,Pstar = create_PPstar_translation(mat.shape[0])
+    return mat@P    
 
-def rot90cw(mat, nbpix):
+def rot90ccw(mat):
     """ Rotate an n by n matrix 90 deg counter clock wise"""
-
-    mat = np.asarray(mat).reshape(nbpix,nbpix)
-
     
     # rotation matrix
-    rot = np.array([[0, -1],
-               [1,0]])
+    rot = np.array([[0, 1],
+               [-1,0]])
     # matrix coordinates
     coord = [i for i in np.ndindex(mat.shape)]
     nbp = mat.shape[0]    
@@ -183,16 +179,22 @@ def applyModel(nbpixTransformMat):
         mang_matrices["Mcor"] = arrayToList(Mcor_ml)
     K.clear_session()
 
+    # Get the output from the corrected input
+    if transform_type == "translation":
+        mang_matrices["Mout"] = arrayToList(translate2left(np.asarray(mang_matrices["Mcor"]).reshape(nbpix,nbpix)))
+    elif transform_type == "rotation":
+        mang_matrices["Mout"] = arrayToList(rot90ccw(np.asarray(mang_matrices["Mcor"]).reshape(nbpix,nbpix)))
+
     # @TODO: debug the corrected output!!
     # # The output from the corrected input
     # if transform_type == "translation":
     #     mang_matrices["Mout"] = translate2right(mang_matrices["Mcor"],nbpix)
     # elif transform_type == "rotation":
     #     mang_matrices["Mout"] = rot90cw(mang_matrices["Mcor"], nbpix)
-
     # mang_matrices = {"Mmang": arrayToList(Mmang_ml)}
+    # return jsonify(arrayToList(Mmang_ml))   
 
-    # return jsonify(arrayToList(Mmang_ml))    
+
     return jsonify(mang_matrices)    
     
 

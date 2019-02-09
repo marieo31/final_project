@@ -9,7 +9,7 @@ var sel_mang_img = d3.select("#svg-mang-img")
 var sel_cor_img = d3.select("#svg-cor-img")
 var sel_out_img = d3.select("#svg-out-img")
 
-
+var gd_create = new Array();
 
 
 // Layout variables
@@ -20,21 +20,23 @@ var margin = {top: 20, right: 100, bottom: 50, left: 100},
 
 // Functions
 //-------------------------------------
+
+// Activated when the transformation type is changed
 function transformChanged(newTransfrom) {
     randomImage()
-
   }
 
+// Activated when the nb of pixels is changed
 function nbpixChanged(newNBpix){
     // replot the randomImage each time we change the nb of pixels
     randomImage()
 
     // update the create image grid
     // Plot the drawing grid
-    var gd_create = gridData(Array(newNBpix*newNBpix).fill(0))
+    gd_create = gridData(Array(newNBpix*newNBpix).fill(0))
     plotMatrix(selector_crt_image, gd_create )
     // Make it clickable
-    makeClickable(selector_crt_image, gd_create)
+    gd_create = makeClickable(selector_crt_image, gd_create)    
 }
 
 // Create the dataset to build the matrices
@@ -99,23 +101,16 @@ function randomImage(){
             +selector_nbpix.property("value") // the nb of pixel
             +selector_transform.property("value") // the type of transformation
             +resp.join("") // the matrix values concatenated into a string
-        // console.log(url)
+        console.log(url)
 
         d3.json(url).then((mangled) => {
-            console.log(mangled.Mmang)
-            
             // Plot the mangled matrix
             plotMatrix(sel_mang_img, gridData(mangled.Mmang))
             // Plot the corrected input
             plotMatrix(sel_cor_img, gridData(mangled.Mcor))
             // Plot the output from the corrected input
             plotMatrix(sel_out_img, gridData(mangled.Mout))
-
-
         })
-
-        
-        
     })    
 }
 
@@ -177,19 +172,39 @@ function makeClickable(svg_obj, gridD){
     return gridD
 }    
 
+// Use the created image
+function createdImage(){
 
-// var gridD = gridData([0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1]);	
-// // I like to log the data to the console for quick debugging
-// console.log(gridD);
+    // Collect the values from the gridData of the created image
+    let ci_val = gd_create.map(function(d){
+        return d.map(function(bb) {return bb.value})
+    })  
+    console.log(ci_val.flat().join(""))
 
-// plotMatrix(d3.select("#svg-create-img"), gridD)
+    // Plot the input image
+    plotMatrix(sel_input_img, gd_create)
+
+    // Call the app.py to get the mangled and corrected outputs
+    // It may be a little "rustic" but we chose to transmit the matrix to the app.py,
+    // by concatenating all the values in the route
+    let url = "/applyModel/"
+        +selector_nbpix.property("value") // the nb of pixel
+        +selector_transform.property("value") // the type of transformation
+        +ci_val.flat().join("") // the matrix values concatenated into a string
+    console.log(url)
+
+    d3.json(url).then((mangled) => {
+        // Plot the mangled matrix
+        plotMatrix(sel_mang_img, gridData(mangled.Mmang))
+        // Plot the corrected input
+        plotMatrix(sel_cor_img, gridData(mangled.Mcor))
+        // Plot the output from the corrected input
+        plotMatrix(sel_out_img, gridData(mangled.Mout))
+    })    
 
 
-// gridData2 = makeClickable(d3.select("#svg-create-img"), gridD)
 
-
-
-
+}
 
 
 function init(){
@@ -226,10 +241,10 @@ function init(){
             randomImage()
 
             // Plot the drawing grid
-            var gd_create = gridData(Array(nbpix*nbpix).fill(0))
+            gd_create = gridData(Array(nbpix*nbpix).fill(0))
             plotMatrix(selector_crt_image, gd_create )
             // Make it clickable
-            var gd_create_clc = makeClickable(selector_crt_image, gd_create)
+            gd_create = makeClickable(selector_crt_image, gd_create)
 
             // // // get the mangled matrices
             // let url = "/applyModel_old/"+nbpix+transform
