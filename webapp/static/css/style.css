@@ -6,6 +6,11 @@
   background-clip: text;
 }
 
+.admin > div {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 1em;
+}
 /* h1 {
     color: blue;
     background-color: white;
