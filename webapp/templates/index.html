@@ -26,14 +26,13 @@
 
 <nav class="navbar-default" style="background-color: white">
     <div class="container-fluid">
-        <div class="navbar-header">
+        <!-- <div class="navbar-header">
             <div class="col-md-6 col-sm-6">
             <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h3 class="panel-title">Number of Pixels</h3>
                     </div>
                     <div id="sample-metadata" class="panel-body">
-                        <!-- Selection of the number of pixels -->
                         <select id="selNBpix" onchange="nbpixChanged(this.value)"></select>
                     </div>
                 </div></div>
@@ -43,21 +42,40 @@
                             <h3 class="panel-title">Transformation Type</h3>
                         </div>
                         <div id="sample-metadata" class="panel-body">
-                            <!-- Selection of the transformation -->
                             <select id="selTransform" onchange="transformChanged(this.value)"></select>
-                        <!-- </div> -->
+                        </div>
                     </div>
-                </div></div>
+                </div></div> -->
 
         
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-left">
+                <select id="selTransform" onchange="transformChanged(this.value)"></select>
+                <select id="selNBpix" onchange="nbpixChanged(this.value)"></select>
+                
+                <!-- <div class="panel-heading">                        
+                        <select id="selTransform" onchange="transformChanged(this.value)"></select>
+                </div>
+                <div class="panel-heading">                        
+                        <select id="selNBpix" onchange="nbpixChanged(this.value)"></select>
+                </div>
+                <li>Transformation</li>
+                 <li class="nav_left">Transformation type</li> -->
+                <!-- <li><select id="selTransform" onchange="transformChanged(this.value)"></select></li>
+                <br>      
+                <li>Nb of pixels</li>
+                <li><select id="selNBpix" onchange="nbpixChanged(this.value)"></select></li>
+                 -->
+                
+            </ul>
                 <ul class="nav navbar-nav navbar-right">
-            <a class="navbar-brand" href="index.html" style="color: rgb(66,139,202); background-color:white">
+            <a class="navbar-brand" href="http://127.0.0.1:5000/" style="color: rgb(66,139,202); background-color:white">
             <i class="glyphicon glyphicon-home"></i>
-                    <a class="navbar-brand" href="info.html" style="color: rgb(66,139,202); background-color: white">
+                    <!-- <a class="navbar-brand" href="info.html" style="color: rgb(66,139,202); background-color: white"> -->
+                    <a class="navbar-brand" href="http://127.0.0.1:5000/info" style="color: rgb(66,139,202); background-color: white">
                     <i class="glyphicon glyphicon-eye-open"></i>
-                    <a class="navbar-brand" href="report.html" target="_blank" style="color: rgb(66,139,202); background-color:white">
+                    <a class="navbar-brand" href="http://127.0.0.1:5000/report" target="_blank" style="color: rgb(66,139,202); background-color:white">
                     <i class="glyphicon glyphicon-tasks"></i>
             </a>
             </ul>
@@ -71,19 +89,11 @@
         <div class="well">
             <!-- RANDOM MATRIX -->
             <button class="btn btn-block btn-primary" id="random_img_btn" onclick="randomImage()">Random Input</button>
-            <div id="svg-random-img"></div>
+            <div class="center" id="svg-random-img"></div>
         </div>
         <div class="well">
-            <div class="panel panel-primary">
-                <!-- CREATE THE MATRIX -->
-                <div class="panel-heading">
-                    <h3 class="panel-title">Create Input</h3>
-                </div>
-                <div id="sample-metadata" class="panel-body">
-                        <button class="btn btn-block btn-primary" id="created_img_btn" onclick="createdImage()">Use the create image</button>
-                    <div id="svg-create-img"></div>
-                </div>
-            </div>
+                <button class="btn btn-block btn-primary" id="created_img_btn" onclick="createdImage()">Use the created image</button>
+                <div class="center" id="svg-create-img"></div>
         </div>
     </div>
 

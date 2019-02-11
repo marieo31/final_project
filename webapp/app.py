@@ -123,6 +123,24 @@ def nbpixels():
     """ Return the list of nb of pixels to fill the selection list"""
     return jsonify(arrayToList(np.arange(4,10,2)))
 
+# @app.route('/<string:page_name>/')
+# def render_static(page_name):
+# return render_template('%s.html' % page_name) 
+
+@app.route('/report')
+def projects():
+    return render_template("report.html", title = 'Code')
+@app.route('/info')
+def info():
+
+    
+    # photo_eye = os.path.join(os.path.join("templates","photos"),"eye.jpg")
+    photo_eye = "C:/Users/MariO/UA_data/final_project/webapp/templates/photos/eye.jpg"
+    print(photo_eye)
+    #  full_filename = os.path.join(app.config['UPLOAD_FOLDER'], 'shovon.jpg')
+    return render_template("info.html", title = 'Info', photo_eye=photo_eye) #, user_image = full_filename)
+
+
 @app.route("/random_image/<nbpix>")
 def random_image(nbpix):
     """ Return a random matrix based on the number of pixels """
@@ -183,23 +201,9 @@ def applyModel(nbpixTransformMat):
     if transform_type == "translation":
         mang_matrices["Mout"] = arrayToList(translate2left(np.asarray(mang_matrices["Mcor"]).reshape(nbpix,nbpix)))
     elif transform_type == "rotation":
-        mang_matrices["Mout"] = arrayToList(rot90ccw(np.asarray(mang_matrices["Mcor"]).reshape(nbpix,nbpix)))
-
-    # @TODO: debug the corrected output!!
-    # # The output from the corrected input
-    # if transform_type == "translation":
-    #     mang_matrices["Mout"] = translate2right(mang_matrices["Mcor"],nbpix)
-    # elif transform_type == "rotation":
-    #     mang_matrices["Mout"] = rot90cw(mang_matrices["Mcor"], nbpix)
-    # mang_matrices = {"Mmang": arrayToList(Mmang_ml)}
-    # return jsonify(arrayToList(Mmang_ml))   
-
-
+        mang_matrices["Mout"] = arrayToList(rot90ccw(np.asarray(mang_matrices["Mcor"]).reshape(nbpix,nbpix))) 
     return jsonify(mang_matrices)    
     
-
-
-
 #-------------------------------------------------------------------
 
 if __name__ == "__main__":

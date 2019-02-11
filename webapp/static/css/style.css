@@ -10,7 +10,16 @@
   display: inline-block;
   vertical-align: top;
   margin-right: 1em;
+  justify-content: center;
 }
+
+.well {
+  justify-content: center;
+}
+.center {
+  width: 800px;
+}
+
 /* h1 {
     color: blue;
     background-color: white;

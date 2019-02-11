@@ -13,9 +13,9 @@ var gd_create = new Array();
 
 
 // Layout variables
-var margin = {top: 20, right: 100, bottom: 50, left: 100},
-    width = 250,
-    height = 250;
+var margin = {top: 10, right: 10, bottom: 10, left: 10};
+var width = 250;
+var height = 250;
 
 
 // Functions

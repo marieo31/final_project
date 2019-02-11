@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <title>Bootstrap Components</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="shortcut icon" type="image/png" href="static/pics/eyeIcon.png"/>
 </head>
 
 
@@ -15,14 +16,18 @@
               <div class="navbar-header"> -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav navbar-right">
-            <a class="navbar-brand" href="index.html" style="color: white">
+            <a class="navbar-brand" href="http://127.0.0.1:5000/" style="color: white">
                 <i class="glyphicon glyphicon-home"></i>
-      
-                <a class="navbar-brand" href="info.html" style="color: white; background-color:rgb(66,139,202)">
+                <a class="navbar-brand" href="http://127.0.0.1:5000/info" style="color: rgb(66,139,202); background-color: white">
+                  <i class="glyphicon glyphicon-eye-open"></i>
+                  <a class="navbar-brand" href="http://127.0.0.1:5000/report" target="_blank" style="color: rgb(66,139,202); background-color:white">
+                  <i class="glyphicon glyphicon-tasks"></i>
+                <!-- <a class="navbar-brand" href="info.html" style="color: white; background-color:rgb(66,139,202)">
                     <i class="glyphicon glyphicon-eye-open"></i>
                     <a class="navbar-brand" href="report.html" target="_blank" style="color: white; background-color:rgb(66,139,202)">
-                        <i class="glyphicon glyphicon-tasks"></i>
-                      </a></ul></div>
+                        <i class="glyphicon glyphicon-tasks"></i> -->
+                      <!-- </a> -->
+                    </ul></div>
   </nav>
 
 <!-- <body>
@@ -38,32 +43,45 @@
     <div class="row">
       <div class="col-md-4">
         <div class="thumbnail">
-          <img src="photos/eye.jpg" alt="...">
+          <img  src="static/pics/eye.jpg" alt="..."> 
           <div class="caption">
             <h3>Retinal Implant</h3>
-            <h6><p>-The system is meant to partially restore useful vision to people who have lost their photoreceptors due to retinal diseases such as retinitis pigmentosa (RP) or age-related macular degeneration (AMD).<br>
-            <br>-Retinal implants introduce visual information into the retina by electrically stimulating the surviving retinal neurons.</p></h6>
+            <h5>
+                <p>-The system is meant to partially restore useful vision to people who have lost their photoreceptors due to retinal diseases such as retinitis pigmentosa (RP) or age-related macular degeneration (AMD).</p>
+                <br>
+                <p>-Retinal implants introduce visual information into the retina by electrically stimulating the surviving retinal neurons.</p>
+              <!-- <p>-<br>
+            <br>-</p> -->
+          </h5>
           </div>
         </div>
       </div>
       <div class="col-md-4">
         <div class="thumbnail">
-          <img src="photos/brain.png" alt="...">
+          <img src="static/pics/brain.png" alt="...">
           <div class="caption">
             <h3>Method for Training a Retinal Implant</h3>
-            <h6><p>-With our model we used machine learning to be able to calibrate an implant using less shapes and repetitions to train.</p></h6>
-          <br><br><br></div>
+            <h5><p>-With our model we used machine learning to be able to calibrate an implant using less shapes and repetitions to train.</p></h5>
+          <!-- <br><br><br> -->
+        </div>
         </div>
       </div>
       <div class="col-md-4">
         <div class="thumbnail">
-          <img src="photos/clock.png" alt="...">
+          <img src="static/pics/clock.png" alt="...">
           <div class="caption">
             <h3>With More Time +</h3>
-            <h6><p>-Adding levels of gray to our inputs, rather than just black and white.
-              <br>-Ability for the user to upload an image.
-            </p></h6><br><br><br><br>
-          </h3></div>
+            <h5>
+              <p>-Adding levels of gray to our inputs, rather than just black and white.</p>
+              <br>
+              <p>-Ability for the user to upload an image.</p>
+              <br>
+              <p>-Use the mangled results to inverse the transformation and define the corrected input.</p>
+              <br>
+              <p>-Apply to randomized and non-linear transformations.</p>
+            </h5>
+            <!-- <br><br><br><br> -->
+          </div>
         </div>
       </div>
     </div>
